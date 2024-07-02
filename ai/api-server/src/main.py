@@ -357,7 +357,6 @@ def answer(
         import shutil
         target = os.path.join(TEMP_DIR, member_id)
         if os.path.exists(target):
-            print(f"{target} exists.")
             shutil.rmtree(target)
         
         RedisUtil.delete(member_id)
@@ -421,7 +420,6 @@ def result_sentence(
         count = 0
         import time
         while "code" not in (data := RedisUtil.get(member_id)).keys():
-            print(f"data in sentence: {data}")
             if count >= 20:
                 break
             count += 1
@@ -560,7 +558,6 @@ def register(
     import shutil
     target = os.path.join(TEMP_DIR, temp_member_id)
     if os.path.exists(target):
-        print(f"{target} exists.")
         shutil.rmtree(target)
     RedisUtil.delete(temp_member_id)
 
@@ -667,6 +664,7 @@ def __run():
     TEMP_DIR = "temp"
 
     import uvicorn
+    # host와 port는 필요에 따라 수정
     uvicorn.run(app=app, host="0.0.0.0", port=54354)
 
 
