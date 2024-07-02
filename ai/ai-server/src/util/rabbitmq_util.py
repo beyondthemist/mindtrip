@@ -47,7 +47,6 @@ class RabbitMQUtil():
     @staticmethod
     def __callback(ch, method, properties, body):
         data = json.loads(body)
-        print(f" [x] Received {data}")
         member_id = data["member_id"]
         temp_file_path = data["temp_file_path"]
         domain = data["domain"]
@@ -59,14 +58,12 @@ class RabbitMQUtil():
 
         # 4. 전처리된 이미지로 detection을 수행하고 dectection 결과 데이터 얻기
         # detection 결과는 json 객체로 받는다.
-        print(f"call Detector.detect({temp_file_path}, {domain}, {project}, {name})")
         output = Detector.detect(
             source=temp_file_path,
             domain=domain,
             project=project,
             name=name
         )
-        print(f"output: {output}")
 
         # 6. 검출 데이터 결과 얻기
         from util.analyzer import Analyzer
@@ -74,11 +71,9 @@ class RabbitMQUtil():
         
         # 7. 검출 결과 캐싱
         prev_scores = RedisUtil.get(member_id)
-        print(f"prev: {prev_scores}")
         if prev_scores:
             prev_scores[domain] = detection_result
             RedisUtil.put(key=member_id, value=prev_scores)
-            print("prev_scores 있다!")
         else:
             RedisUtil.put(
                 key=member_id,
@@ -86,6 +81,4 @@ class RabbitMQUtil():
                     domain: detection_result
                 }
             )
-        # { "house": 3, "tree": 4, "person": 5 }
-        print(f"{domain} cached: {RedisUtil.get(member_id)}")
-
+            # { "house": 3, "tree": 4, "person": 5 }
